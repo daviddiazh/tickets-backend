@@ -18,8 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "auth/*": ["./src/auth/*",],
-      "tickets/*": ["./src/tickets/*",],
+      "@admin/*": ["./src/admin/*",],
+      "@auth/*": ["./src/auth/*",],
+      "@tickets/*": ["./src/tickets/*",],
+      "@shared/*": ["./src/shared/*",],
     }
   }
 }

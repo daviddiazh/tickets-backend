@@ -1,4 +1,4 @@
-import { Role } from '../enums/role.enum';
+import { Role } from '@auth/domain/enums/role.enum';
 
 export interface ILogin {
   _id: any;
