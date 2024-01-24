@@ -25,7 +25,6 @@ export class LoginUseCase {
       const { email, password: passwordReq } = payload;
 
       const user: IUser = await this.db.findOne({ email });
-      console.log({user})
 
       const isMatchPasswords = this.hash.compare(passwordReq, user.password);
 
@@ -39,9 +38,12 @@ export class LoginUseCase {
         );
       }
 
+      await this.db.update({ _id: user._id }, { online: true });
+
       return {
         user: {
           ...user,
+          online: true,
           password: null,
         },
         token: this.jwtService.sign({ _id: user?._id + '' }),

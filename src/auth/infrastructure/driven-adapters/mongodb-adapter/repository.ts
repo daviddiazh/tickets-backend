@@ -43,4 +43,15 @@ export class AuthDBRepository {
       throw new NotFoundException('No se encontró ningún usuario por el ID');
     }
   }
+
+  async update(where: any, payload: any): Promise<IEnrollment> {
+    try {
+      const user: any = await this.authModel.findByIdAndUpdate(where, payload, {
+        new: true,
+      });
+      return user;
+    } catch (error) {
+      throw new NotFoundException('No se encontró ningún usuario por el ID');
+    }
+  }
 }
