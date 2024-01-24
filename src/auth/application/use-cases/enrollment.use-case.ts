@@ -14,7 +14,8 @@ export class EnrollmentUseCase {
 
   async apply(payload: IEnrollment) {
     try {
-      const user = await this.dbUseCase.findOne(payload.email);
+      const user = await this.dbUseCase.findOne({ email: payload.email });
+      console.log({ user });
 
       if (user) throw new BadRequestException('Verifica los datos por favor');
 
@@ -33,6 +34,8 @@ export class EnrollmentUseCase {
     } catch (error) {
       this.logger.error('Error al crear el usuario, ' + error);
       throw error;
+    } finally {
+      this.logger.log('Enrollment ended');
     }
   }
 }
