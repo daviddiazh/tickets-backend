@@ -1,6 +1,6 @@
 import { Role } from '@auth/domain/enums/role.enum';
 
-export interface ILogin {
+export interface IEnrollment {
   _id: any;
   fullName: string;
   email: string;
