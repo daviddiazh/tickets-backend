@@ -18,6 +18,6 @@ export class LoginController {
   @UseGuards(AuthenticationGuard, RoleGuard)
   @PermitedRoles('ADMIN')
   test() {
-    return 'privare resource';
+    return 'private resource';
   }
 }

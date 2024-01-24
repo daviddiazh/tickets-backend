@@ -1,6 +1,6 @@
 import { IsBoolean, IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { parseBoolean } from '@shared/pipes/parse-boolean';
+import { parseBoolean } from '@shared/pipes/parse-boolean.pipe';
 import { Role } from '@auth/domain/enums/role.enum';
 import { IEnrollment } from '@auth/domain/interfaces/enrollment.interface';
 

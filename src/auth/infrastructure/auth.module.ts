@@ -13,6 +13,8 @@ import { EnrollmentController } from './entry-points/controllers/enrollment.cont
 import { AuthDBRepository } from './driven-adapters/mongodb-adapter/repository';
 import { AuthSchema } from './driven-adapters/mongodb-adapter/schema';
 import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
+import { LogoutController } from './entry-points/controllers/logout.controller';
+import { LogoutUseCase } from '@auth/application/use-cases/logout.use-case';
 
 @Module({
   imports: [
@@ -38,7 +40,6 @@ import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
   providers: [
     BcryptAdapter,
     AuthDBRepository,
-
     JwtStrategy,
 
     {
@@ -63,7 +64,12 @@ import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
       useFactory: (hashAdapter: HashUseCase, dbAdapter: DBUseCase) =>
         new EnrollmentUseCase(hashAdapter, dbAdapter),
     },
+    {
+      inject: [AuthDBRepository],
+      provide: LogoutUseCase,
+      useFactory: (dbAdapter: DBUseCase) => new LogoutUseCase(dbAdapter),
+    },
   ],
-  controllers: [LoginController, EnrollmentController],
+  controllers: [LoginController, EnrollmentController, LogoutController],
 })
 export class AuthModule {}
