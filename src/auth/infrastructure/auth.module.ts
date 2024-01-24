@@ -5,6 +5,7 @@ import { EnrollmentUseCase } from '@auth/application/use-cases/enrollment.use-ca
 import { BcryptAdapter } from './driven-adapters/bcrypt-adapter/service';
 import { LoginController } from './entry-points/controllers/login.controller';
 import { EnrollmentController } from './entry-points/controllers/enrollment.controller';
+import { DBUseCase } from '@auth/application/use-cases/db.use-case';
 
 @Module({
   imports: [],
@@ -18,8 +19,8 @@ import { EnrollmentController } from './entry-points/controllers/enrollment.cont
     {
       inject: [BcryptAdapter],
       provide: EnrollmentUseCase,
-      useFactory: (hashAdapter: HashUseCase) =>
-        new EnrollmentUseCase(hashAdapter),
+      useFactory: (hashAdapter: HashUseCase, dbAdapter: DBUseCase) =>
+        new EnrollmentUseCase(hashAdapter, dbAdapter),
     },
   ],
   controllers: [LoginController, EnrollmentController],
