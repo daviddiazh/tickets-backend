@@ -9,17 +9,52 @@ import { EnrollmentController } from './entry-points/controllers/enrollment.cont
 import { AuthDBRepository } from './driven-adapters/mongodb-adapter/repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthSchema } from './driven-adapters/mongodb-adapter/schema';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Auth', schema: AuthSchema }])],
+  imports: [
+    ConfigModule,
+    MongooseModule.forFeature([{ name: 'Auth', schema: AuthSchema }]),
+
+    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          secret: configService.get('JWT_SECRET') || '',
+          signOptions: {
+            expiresIn: '2h',
+          },
+        };
+      },
+    }),
+  ],
   providers: [
     BcryptAdapter,
     AuthDBRepository,
 
+    // JwtStrategy,
+
+    // {
+    //   inject: [JwtStrategy],
+    //   provide: LoginUseCase,
+    //   useFactory: (hashAdapter: HashUseCase, dbAdapter: DBUseCase) =>
+    //     new EnrollmentUseCase(hashAdapter, dbAdapter),
+    // },
     {
-      inject: [BcryptAdapter],
+      inject: [BcryptAdapter, JwtService, AuthDBRepository],
       provide: LoginUseCase,
-      useFactory: (hashAdapter: HashUseCase) => new LoginUseCase(hashAdapter),
+      useFactory: (
+        hashAdapter: HashUseCase,
+        jwtService: JwtService,
+        dbAdapter: DBUseCase,
+      ) => new LoginUseCase(hashAdapter, jwtService, dbAdapter),
     },
     {
       inject: [BcryptAdapter, AuthDBRepository],

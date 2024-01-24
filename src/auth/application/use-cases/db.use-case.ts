@@ -5,6 +5,10 @@ import { IDB } from '@auth/domain/interfaces/db.interface';
 export class DBUseCase implements IDB {
   constructor(private readonly dbUseCase: IDB) {}
 
+  async findById(_id: any): Promise<any> {
+    return await this.dbUseCase.findById(_id);
+  }
+
   async findOne(where: any): Promise<any> {
     return await this.dbUseCase.findOne(where);
   }

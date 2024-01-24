@@ -16,12 +16,6 @@ export class AuthDBRepository {
     try {
       await new this.authModel(payload).save();
 
-      //   if (!createdUser) {
-      //     throw new BadRequestException(
-      //       'Error en el registro, por favor verifique los datos e ingréselos nuevamente.',
-      //     );
-      //   }
-
       return payload;
     } catch (error) {
       throw new UnauthorizedException(
@@ -32,11 +26,21 @@ export class AuthDBRepository {
 
   async findOne(where: any): Promise<IEnrollment> {
     try {
-      return await this.authModel.findOne(where);
+      const user = await this.authModel.findOne(where);
+
+      return user['_doc'];
     } catch (error) {
       throw new NotFoundException(
         'No se encontró ningún usuario por ese filtro',
       );
+    }
+  }
+
+  async findById(_id: any): Promise<IEnrollment> {
+    try {
+      return await this.authModel.findById(_id);
+    } catch (error) {
+      throw new NotFoundException('No se encontró ningún usuario por el ID');
     }
   }
 }
