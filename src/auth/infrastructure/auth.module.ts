@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LoginUseCase } from '@auth/application/use-cases/login.use-case';
 import { HashUseCase } from '@auth/application/use-cases/hash.use-case';
 import { EnrollmentUseCase } from '@auth/application/use-cases/enrollment.use-case';
@@ -7,11 +11,7 @@ import { BcryptAdapter } from './driven-adapters/bcrypt-adapter/service';
 import { LoginController } from './entry-points/controllers/login.controller';
 import { EnrollmentController } from './entry-points/controllers/enrollment.controller';
 import { AuthDBRepository } from './driven-adapters/mongodb-adapter/repository';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthSchema } from './driven-adapters/mongodb-adapter/schema';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
 
 @Module({
@@ -39,14 +39,15 @@ import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
     BcryptAdapter,
     AuthDBRepository,
 
-    // JwtStrategy,
+    JwtStrategy,
 
-    // {
-    //   inject: [JwtStrategy],
-    //   provide: LoginUseCase,
-    //   useFactory: (hashAdapter: HashUseCase, dbAdapter: DBUseCase) =>
-    //     new EnrollmentUseCase(hashAdapter, dbAdapter),
-    // },
+    {
+      inject: [AuthDBRepository],
+      provide: JwtStrategy,
+      useFactory: (dbAdapter: DBUseCase) => {
+        new JwtStrategy(dbAdapter);
+      },
+    },
     {
       inject: [BcryptAdapter, JwtService, AuthDBRepository],
       provide: LoginUseCase,

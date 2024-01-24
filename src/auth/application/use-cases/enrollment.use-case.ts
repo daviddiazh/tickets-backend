@@ -15,7 +15,6 @@ export class EnrollmentUseCase {
   async apply(payload: IEnrollment) {
     try {
       const user = await this.dbUseCase.findOne({ email: payload.email });
-      console.log({ user });
 
       if (user) throw new BadRequestException('Verifica los datos por favor');
 
