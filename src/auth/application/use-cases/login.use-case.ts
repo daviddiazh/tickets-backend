@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { HashUseCase } from './hash.use-case';
 import { ILogin } from '@auth/domain/interfaces/login.interface';
 import { JwtService } from '@nestjs/jwt';
@@ -30,12 +25,6 @@ export class LoginUseCase {
 
       if (!isMatchPasswords) {
         throw new BadRequestException('Revisa los datos por favor');
-      }
-
-      if (!user.hasAccess) {
-        throw new ForbiddenException(
-          'Comuniquese con el administrador para que le otorgue el acceso',
-        );
       }
 
       await this.db.update({ _id: user._id }, { online: true });

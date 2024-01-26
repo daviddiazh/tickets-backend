@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import { AuthSpec } from './schema';
 
 @Injectable()
-export class AuthDBRepository {
+export class AuthMongoDBRepository {
   constructor(@InjectModel('Auth') private authModel: Model<AuthSpec>) {}
 
   async insert(payload: IEnrollment): Promise<IEnrollment> {
@@ -28,7 +28,7 @@ export class AuthDBRepository {
     try {
       const user = await this.authModel.findOne(where);
 
-      return user['_doc'];
+      return user?.['_doc'];
     } catch (error) {
       throw new NotFoundException(
         'No se encontró ningún usuario por ese filtro',

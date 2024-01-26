@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IEnrollment } from '@auth/domain/interfaces/enrollment.interface';
-import { Role } from '@auth/domain/enums/role.enum';
 
 @Schema({
   toJSON: {
@@ -38,21 +37,11 @@ export class AuthSpec extends Document implements IEnrollment {
   password: string;
 
   @Prop({
-    type: String,
+    type: Number,
     required: true,
     trim: true,
-    enum: {
-      values: [Role.ADMIN, Role.AGENT],
-    },
   })
-  role: Role;
-
-  @Prop({
-    type: Boolean,
-    required: false,
-    default: true,
-  })
-  hasAccess: boolean;
+  desk: number;
 
   @Prop({
     type: Boolean,

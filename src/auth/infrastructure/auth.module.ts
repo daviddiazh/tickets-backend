@@ -10,7 +10,7 @@ import { DBUseCase } from '@auth/application/use-cases/db.use-case';
 import { BcryptAdapter } from './driven-adapters/bcrypt-adapter/service';
 import { LoginController } from './entry-points/controllers/login.controller';
 import { EnrollmentController } from './entry-points/controllers/enrollment.controller';
-import { AuthDBRepository } from './driven-adapters/mongodb-adapter/repository';
+import { AuthMongoDBRepository } from './driven-adapters/mongodb-adapter/repository';
 import { AuthSchema } from './driven-adapters/mongodb-adapter/schema';
 import { JwtStrategy } from './entry-points/strategy/jwt-strategy';
 import { LogoutController } from './entry-points/controllers/logout.controller';
@@ -39,18 +39,18 @@ import { LogoutUseCase } from '@auth/application/use-cases/logout.use-case';
   ],
   providers: [
     BcryptAdapter,
-    AuthDBRepository,
+    AuthMongoDBRepository,
     JwtStrategy,
 
     {
-      inject: [AuthDBRepository],
+      inject: [AuthMongoDBRepository],
       provide: JwtStrategy,
       useFactory: (dbAdapter: DBUseCase) => {
         new JwtStrategy(dbAdapter);
       },
     },
     {
-      inject: [BcryptAdapter, JwtService, AuthDBRepository],
+      inject: [BcryptAdapter, JwtService, AuthMongoDBRepository],
       provide: LoginUseCase,
       useFactory: (
         hashAdapter: HashUseCase,
@@ -59,13 +59,13 @@ import { LogoutUseCase } from '@auth/application/use-cases/logout.use-case';
       ) => new LoginUseCase(hashAdapter, jwtService, dbAdapter),
     },
     {
-      inject: [BcryptAdapter, AuthDBRepository],
+      inject: [BcryptAdapter, AuthMongoDBRepository],
       provide: EnrollmentUseCase,
       useFactory: (hashAdapter: HashUseCase, dbAdapter: DBUseCase) =>
         new EnrollmentUseCase(hashAdapter, dbAdapter),
     },
     {
-      inject: [AuthDBRepository],
+      inject: [AuthMongoDBRepository],
       provide: LogoutUseCase,
       useFactory: (dbAdapter: DBUseCase) => new LogoutUseCase(dbAdapter),
     },

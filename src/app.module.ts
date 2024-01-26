@@ -3,6 +3,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '@auth/infrastructure/auth.module';
 import envConfig from '@shared/config/env';
+import { TicketsModule } from '@tickets/infrastructure/tickets.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import envConfig from '@shared/config/env';
       inject: [envConfig.KEY],
     }),
     AuthModule,
+    TicketsModule,
   ],
 })
 export class AppModule {}

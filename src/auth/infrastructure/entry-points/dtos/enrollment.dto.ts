@@ -1,7 +1,6 @@
-import { IsBoolean, IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { parseBoolean } from '@shared/pipes/parse-boolean.pipe';
-import { Role } from '@auth/domain/enums/role.enum';
 import { IEnrollment } from '@auth/domain/interfaces/enrollment.interface';
 
 export class EnrollmentDto implements IEnrollment {
@@ -30,17 +29,10 @@ export class EnrollmentDto implements IEnrollment {
   password: string;
 
   @IsNotEmpty({
-    message: 'El rol es obligatorio',
+    message: 'El número del escritorio es obligatorio',
   })
-  @IsIn([Role.ADMIN, Role.AGENT], {
-    message: `El rol debe ser [${Role.ADMIN} ó ${Role.AGENT}]`,
-  })
-  role: Role;
-
-  @IsNotEmpty({ message: 'El acceso es obligatorio' })
-  @Transform(parseBoolean)
-  @IsBoolean({ message: 'Por favor, verifica el acceso' })
-  hasAccess: boolean;
+  @IsNumber()
+  desk: number;
 
   @Transform(parseBoolean)
   @IsBoolean({ message: 'Por favor, verifica el estado online' })
