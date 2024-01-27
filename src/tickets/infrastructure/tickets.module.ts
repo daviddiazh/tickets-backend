@@ -9,6 +9,7 @@ import { ManagementTicketUseCase } from '@tickets/application/use-cases/manageme
 import { ManagementTicketController } from './entry-points/controllers/management-ticket.controller';
 import { FindTicketsOnManagementUseCase } from '@tickets/application/use-cases/find-tickets-on-management.use-case';
 import { FindTicketsOnManagementController } from './entry-points/controllers/find-tickets-on-management.controller';
+import { FindTicketsOnManagementGateway } from './entry-points/gateways/find-tickets-on-management.gateway';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FindTicketsOnManagementController } from './entry-points/controllers/fi
   ],
   providers: [
     TicketsMongoDBRepository,
+    FindTicketsOnManagementGateway,
 
     {
       inject: [TicketsMongoDBRepository],
