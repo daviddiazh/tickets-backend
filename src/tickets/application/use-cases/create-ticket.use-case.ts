@@ -14,12 +14,16 @@ export class CreateTicketUseCase {
         ? latestTicket?.[0]?.consecutive + 1
         : 1;
 
+      const words = ['TI', 'CK', 'ET', 'SS'];
+
+      const nRandom = Math.floor(Math.random() * 4);
+      const randomWord = words[nRandom];
+
       const dataToInsert: IQueueTicket = {
         consecutive: consecutive,
-        ticket: `TICKET#${consecutive}`,
+        ticket: `${randomWord}${consecutive}`,
         step: Step.START,
       };
-      console.log({ dataToInsert });
 
       return await this.db.insert(dataToInsert);
     } catch (error) {
