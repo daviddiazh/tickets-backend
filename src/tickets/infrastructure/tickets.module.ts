@@ -7,6 +7,8 @@ import { TicketsMongoDBRepository } from './driven-adapters/mongodb-adaper/repos
 import { CreateTicketController } from './entry-points/controllers/create-ticket.controller';
 import { ManagementTicketUseCase } from '@tickets/application/use-cases/management-ticket.use-case';
 import { ManagementTicketController } from './entry-points/controllers/management-ticket.controller';
+import { FindTicketsOnManagementUseCase } from '@tickets/application/use-cases/find-tickets-on-management.use-case';
+import { FindTicketsOnManagementController } from './entry-points/controllers/find-tickets-on-management.controller';
 
 @Module({
   imports: [
@@ -27,7 +29,18 @@ import { ManagementTicketController } from './entry-points/controllers/managemen
         return new ManagementTicketUseCase(dbAdapter);
       },
     },
+    {
+      inject: [TicketsMongoDBRepository],
+      provide: FindTicketsOnManagementUseCase,
+      useFactory: (dbAdapter: DBUseCase) => {
+        return new FindTicketsOnManagementUseCase(dbAdapter);
+      },
+    },
   ],
-  controllers: [CreateTicketController, ManagementTicketController],
+  controllers: [
+    CreateTicketController,
+    ManagementTicketController,
+    FindTicketsOnManagementController,
+  ],
 })
 export class TicketsModule {}

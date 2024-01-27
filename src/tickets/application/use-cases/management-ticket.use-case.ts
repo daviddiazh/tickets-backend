@@ -18,15 +18,22 @@ export class ManagementTicketUseCase {
       });
 
       if (ticketToManagement?.[0]?._id) {
-        return await this.db.update(ticketToManagement?.[0]?._id, {
-          step: Step.MANAGEMENT,
-          managementBy: payload?.userId,
-        });
+        const updateTicket = await this.db.update(
+          ticketToManagement?.[0]?._id,
+          {
+            step: Step.MANAGEMENT,
+            managementBy: payload?.userId,
+          },
+        );
+
+        return { next: updateTicket };
       }
 
-      return;
+      return { next: null };
     } catch (error) {
-      throw new BadRequestException('');
+      throw new BadRequestException(
+        'Ocurrio un error al darle manejo a los tickets',
+      );
     }
   }
 }

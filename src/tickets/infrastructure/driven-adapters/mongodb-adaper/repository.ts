@@ -25,6 +25,16 @@ export class TicketsMongoDBRepository {
     }
   }
 
+  async find(where: any): Promise<any> {
+    try {
+      return await this.ticketModel.find(where).populate('managementBy');
+    } catch (error) {
+      throw new BadRequestException(
+        'Parece que hubo un error al encontrar los tickets',
+      );
+    }
+  }
+
   async findByLatestInsert(): Promise<any> {
     try {
       const user = await this.ticketModel
