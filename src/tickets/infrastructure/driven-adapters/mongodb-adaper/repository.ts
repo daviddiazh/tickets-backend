@@ -10,15 +10,15 @@ import { TicketSpec } from './schema';
 
 @Injectable()
 export class TicketsMongoDBRepository {
-  constructor(@InjectModel('Ticket') private authModel: Model<TicketSpec>) {}
+  constructor(@InjectModel('Ticket') private ticketModel: Model<TicketSpec>) {}
 
   async insert(payload: IQueueTicket): Promise<IQueueTicket> {
     try {
-      await new this.authModel(payload).save();
+      await new this.ticketModel(payload).save();
 
       return payload;
     } catch (error) {
-        console.log({error})
+      console.log({ error });
       throw new BadRequestException(
         'Error al crear el ticket por favor intente más tarde',
       );
@@ -27,13 +27,47 @@ export class TicketsMongoDBRepository {
 
   async findByLatestInsert(): Promise<any> {
     try {
-      const user = await this.authModel.find().sort({ $natural: -1 }).limit(1);
+      const user = await this.ticketModel
+        .find()
+        .sort({ $natural: -1 })
+        .limit(1);
 
       return user;
     } catch (error) {
       throw new NotFoundException(
         'No se encontró ningún ticket ó ocurrio un error',
       );
+    }
+  }
+
+  async findOne(where: any): Promise<any> {
+    try {
+      const ticket = await this.ticketModel
+        .find(where)
+        .sort({ ['consecutive']: 'asc' })
+        .limit(1)
+        .exec();
+
+      return ticket;
+    } catch (error) {
+      throw new NotFoundException(
+        'No se encontró ningún ticket por ese filtro',
+      );
+    }
+  }
+
+  async update(where: any, payload: any): Promise<TicketSpec> {
+    try {
+      const user: any = await this.ticketModel.findByIdAndUpdate(
+        where,
+        payload,
+        {
+          new: true,
+        },
+      );
+      return user;
+    } catch (error) {
+      throw new NotFoundException('No se encontró ningún ticket por el ID');
     }
   }
 }

@@ -1,13 +1,30 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Step } from '@tickets/domain/enums/status.enum';
 import { DBUseCase } from './db.use-case';
+import { IQueueTicket } from '@tickets/domain/interfaces/queue-tickets.interface';
 
 @Injectable()
 export class ManagementTicketUseCase {
   constructor(private readonly db: DBUseCase) {}
 
-  async apply(where: any) {
+  async apply(payload: any) {
     try {
-      //   const currentTicket = await this.db.findOne({ consecutive: where?.consecutive });
+      if (payload?.currentTicketID !== 'null') {
+        await this.db.update(payload?.currentTicketID, { step: Step.ENDED });
+      }
+
+      const ticketToManagement: IQueueTicket = await this.db.findOne({
+        step: Step.START,
+      });
+
+      if (ticketToManagement?.[0]?._id) {
+        return await this.db.update(ticketToManagement?.[0]?._id, {
+          step: Step.MANAGEMENT,
+          managementBy: payload?.userId,
+        });
+      }
+
+      return;
     } catch (error) {
       throw new BadRequestException('');
     }
