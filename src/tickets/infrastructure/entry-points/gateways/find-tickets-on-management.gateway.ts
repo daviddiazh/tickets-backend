@@ -11,16 +11,25 @@ import { Server, Socket } from 'socket.io';
 export class FindTicketsOnManagementGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  @WebSocketServer()
-  server: Server;
+  @WebSocketServer() wss: Server;
 
   constructor(private readonly useCase: FindTicketsOnManagementUseCase) {}
 
-  handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     console.log('Cliente conectado: ', client.id);
+
+    const tickets = await this.useCase.apply();
+
+    this.wss.emit('tickets-on-connection', tickets);
   }
 
   handleDisconnect(client: Socket) {
     console.log('Cliente desconectado: ', client.id);
+  }
+
+  async managementTickets() {
+    const tickets = await this.useCase.apply();
+
+    this.wss.emit('tickets-on-management', tickets);
   }
 }
