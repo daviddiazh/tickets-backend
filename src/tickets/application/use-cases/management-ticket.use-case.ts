@@ -10,7 +10,11 @@ export class ManagementTicketUseCase {
   async apply(payload: any) {
     try {
       if (payload?.currentTicketID !== 'null') {
-        await this.db.update(payload?.currentTicketID, { step: Step.ENDED });
+        const currentTicket = await this.db.findById(payload?.currentTicketID);
+
+        if (`${payload?.userId}` == `${currentTicket?.managementBy?._id}`) {
+          await this.db.update(payload?.currentTicketID, { step: Step.ENDED });
+        }
       }
 
       const ticketToManagement: IQueueTicket = await this.db.findOne({
@@ -31,6 +35,7 @@ export class ManagementTicketUseCase {
 
       return { next: null };
     } catch (error) {
+      console.log({ error })
       throw new BadRequestException(
         'Ocurrio un error al darle manejo a los tickets',
       );

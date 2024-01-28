@@ -50,6 +50,18 @@ export class TicketsMongoDBRepository {
     }
   }
 
+  async findById(id: any): Promise<any> {
+    try {
+      const ticket = await this.ticketModel
+        .findById(id)
+        .populate('managementBy');
+
+      return ticket;
+    } catch (error) {
+      throw new NotFoundException('No se encontró ningún ticket por ese ID');
+    }
+  }
+
   async findOne(where: any): Promise<any> {
     try {
       const ticket = await this.ticketModel
@@ -78,6 +90,14 @@ export class TicketsMongoDBRepository {
       return user;
     } catch (error) {
       throw new NotFoundException('No se encontró ningún ticket por el ID');
+    }
+  }
+
+  async listenForChanges() {
+    try {
+      await this.ticketModel.watch().on('change', (change) => change);
+    } catch (error) {
+      console.warn({ error });
     }
   }
 }
