@@ -8,7 +8,7 @@ import { FindTicketsOnManagementUseCase } from '@tickets/application/use-cases/f
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: true, namespace: 'tickets' })
-export class FindTicketsOnManagementGateway
+export class WebsocketsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() wss: Server;
@@ -28,8 +28,15 @@ export class FindTicketsOnManagementGateway
   }
 
   async managementTickets() {
-    const tickets = await this.useCase.apply();
+    // const tickets = await this.useCase.apply();
+    // this.wss.emit('tickets-on-management', tickets);
+  }
 
-    this.wss.emit('tickets-on-management', tickets);
+  async emit(event: string, payload: any) {
+    return await this.wss.emit(event, payload);
+  }
+
+  async on(event: string, payload: any) {
+    return await this.wss.on(event, payload);
   }
 }

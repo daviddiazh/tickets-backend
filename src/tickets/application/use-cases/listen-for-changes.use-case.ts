@@ -8,4 +8,10 @@ export class ListenForChangesUseCase {
     private readonly db: DBUseCase,
     private readonly wss: WebSocketsUseCase,
   ) {}
+
+  async apply() {
+    const changes = await this.db.listenForChanges();
+
+    console.log({ changes });
+  }
 }

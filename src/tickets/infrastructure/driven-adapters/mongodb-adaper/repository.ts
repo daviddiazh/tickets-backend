@@ -95,7 +95,7 @@ export class TicketsMongoDBRepository {
 
   async listenForChanges() {
     try {
-      await this.ticketModel.watch().on('change', (change) => change);
+      return await this.ticketModel.watch().on('change', (change) => change);
     } catch (error) {
       console.warn({ error });
     }

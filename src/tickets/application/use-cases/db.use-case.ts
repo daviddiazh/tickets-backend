@@ -28,4 +28,8 @@ export class DBUseCase implements IDB {
   async findByLatestInsert() {
     return await this.dbUseCase.findByLatestInsert();
   }
+
+  async listenForChanges() {
+    return await this.dbUseCase.listenForChanges();
+  }
 }

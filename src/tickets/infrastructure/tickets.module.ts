@@ -9,15 +9,24 @@ import { ManagementTicketUseCase } from '@tickets/application/use-cases/manageme
 import { ManagementTicketController } from './entry-points/controllers/management-ticket.controller';
 import { FindTicketsOnManagementUseCase } from '@tickets/application/use-cases/find-tickets-on-management.use-case';
 import { FindTicketsOnManagementController } from './entry-points/controllers/find-tickets-on-management.controller';
-import { FindTicketsOnManagementGateway } from './entry-points/gateways/find-tickets-on-management.gateway';
+import { WebSocketsUseCase } from '@tickets/application/use-cases/websocket.use-case';
+import { ListenForChangesUseCase } from '@tickets/application/use-cases/listen-for-changes.use-case';
+import { WebsocketsGateway } from './driven-adapters/websockets-adapter/gateway';
+import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { EventEmitterAdapter } from './driven-adapters/event-emitter-adapter/service';
+import { WebsocketsAdapter } from './driven-adapters/websockets-adapter/service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
+    // WebsocketsModule,
+
+    EventEmitterModule.forRoot(),
   ],
   providers: [
     TicketsMongoDBRepository,
-    FindTicketsOnManagementGateway,
+    WebsocketsGateway,
+    WebsocketsAdapter,
 
     {
       inject: [TicketsMongoDBRepository],
@@ -25,10 +34,10 @@ import { FindTicketsOnManagementGateway } from './entry-points/gateways/find-tic
       useFactory: (dbAdapter: DBUseCase) => new CreateTicketUseCase(dbAdapter),
     },
     {
-      inject: [TicketsMongoDBRepository],
+      inject: [TicketsMongoDBRepository, EventEmitter2],
       provide: ManagementTicketUseCase,
-      useFactory: (dbAdapter: DBUseCase) => {
-        return new ManagementTicketUseCase(dbAdapter);
+      useFactory: (dbAdapter: DBUseCase, eventEmitter: EventEmitter2) => {
+        return new ManagementTicketUseCase(dbAdapter, eventEmitter);
       },
     },
     {
@@ -36,6 +45,23 @@ import { FindTicketsOnManagementGateway } from './entry-points/gateways/find-tic
       provide: FindTicketsOnManagementUseCase,
       useFactory: (dbAdapter: DBUseCase) => {
         return new FindTicketsOnManagementUseCase(dbAdapter);
+      },
+    },
+    {
+      inject: [TicketsMongoDBRepository, WebsocketsGateway],
+      provide: ListenForChangesUseCase,
+      useFactory: (
+        dbAdapter: DBUseCase,
+        websocketAdapter: WebSocketsUseCase,
+      ) => {
+        return new ListenForChangesUseCase(dbAdapter, websocketAdapter);
+      },
+    },
+    {
+      inject: [WebsocketsGateway, EventEmitter2],
+      provide: EventEmitterAdapter,
+      useFactory: (websocketAdapter: WebsocketsGateway) => {
+        return new EventEmitterAdapter(websocketAdapter);
       },
     },
   ],
